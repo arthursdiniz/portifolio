@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: portifolio
+  datasource:
+    url: jdbc:h2:mem:portifoliodb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  h2:
+    console:
+      enabled: true
+
+portfolio:
+  admin:
+    secret-key: ${ADMIN_SECRET_KEY:admin123}

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo | &lt;Diniz.Dev/&gt;</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+
+    <nav class="navbar scrolled">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-bracket">&lt;</span><span class="logo-name">Diniz</span><span class="logo-dot">.</span><span class="logo-highlight">Dev/&gt;</span> <span class="badge-admin">Admin</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html"><i class="fa-solid fa-house"></i> Ver Site</a></li>
+                <li><a href="/swagger-ui/index.html" target="_blank"><i class="fa-solid fa-code"></i> Swagger Docs</a></li>
+                <li id="nav-logout-item" style="display: none;">
+                    <button id="btn-logout" class="btn btn-outline btn-sm"><i class="fa-solid fa-lock"></i> Bloquear / Sair</button>
+                </li>
+            </ul>
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <div id="auth-overlay" class="auth-overlay">
+        <div class="auth-card glass-box">
+            <div class="auth-icon-box">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h2>Acesso Restrito ao Administrador</h2>
+            <p class="text-muted">A visualização do portfólio e projetos é pública, mas a criação e modificação é reservada apenas ao desenvolvedor.</p>
+
+            <form id="auth-form" class="auth-form">
+                <div class="input-group">
+                    <label for="auth-key-input">Chave de Segurança / Senha</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="auth-key-input" required placeholder="Digite a chave administrativa">
+                        <button type="button" id="toggle-key-visibility" class="toggle-pwd-btn"><i class="fa-solid fa-eye"></i></button>
+                    </div>
+                </div>
+
+                <div id="auth-error" class="auth-error-msg" style="display: none;"></div>
+
+                <button type="submit" class="btn btn-primary w-100" id="btn-verify-auth">
+                    <span>Desbloquear Painel</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+
+                <a href="index.html" class="btn btn-secondary w-100 mt-2">
+                    <i class="fa-solid fa-arrow-left"></i> Voltar para a Página Pública
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <main class="admin-main section" id="admin-dashboard-content" style="display: none;">
+        <div class="container">
+
+            <div class="admin-header">
+                <div>
+                    <h1>Painel de Gerenciamento</h1>
+                    <p class="text-muted">Adicione, edite e gerencie seus projetos com persistência direta no backend Spring Boot.</p>
+                </div>
+                <button class="btn btn-primary" id="btn-open-new-project-modal">
+                    <i class="fa-solid fa-plus"></i> Novo Projeto
+                </button>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="admin-tab-btn active" data-tab="tab-projects">
+                    <i class="fa-solid fa-folder-tree"></i> Projetos Cadastrados (<span id="project-count">0</span>)
+                </button>
+                <button class="admin-tab-btn" data-tab="tab-messages">
+                    <i class="fa-solid fa-envelope-open-text"></i> Mensagens de Contato (<span id="message-count">0</span>)
+                </button>
+            </div>
+
+            <div class="admin-tab-content active" id="tab-projects">
+                <div class="glass-box admin-card-container">
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Ícone</th>
+                                    <th>Título</th>
+                                    <th>Categoria</th>
+                                    <th>Tecnologias</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-projects-table-body">
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <i class="fa-solid fa-circle-notch fa-spin"></i> Carregando projetos...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-tab-content" id="tab-messages">
+                <div class="glass-box admin-card-container">
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Data / Hora</th>
+                                    <th>Remetente</th>
+                                    <th>E-mail</th>
+                                    <th>Mensagem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-messages-table-body">
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        <i class="fa-solid fa-circle-notch fa-spin"></i> Carregando mensagens...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div class="modal-backdrop" id="project-modal">
+        <div class="modal-dialog glass-box">
+            <div class="modal-header">
+                <h3 id="modal-title"><i class="fa-solid fa-plus-circle"></i> Adicionar Novo Projeto</h3>
+                <button class="modal-close" id="modal-close-btn">&times;</button>
+            </div>
+
+            <form id="project-form" class="modal-form">
+                <input type="hidden" id="form-project-id">
+
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="form-title">Título do Projeto *</label>
+                        <input type="text" id="form-title" required placeholder="Ex: E-Commerce RESTful API">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="form-category">Categoria *</label>
+                        <select id="form-category" required>
+                            <option value="backend">Backend (Java)</option>
+                            <option value="game">Jogos</option>
+                            <option value="academic">Acadêmico</option>
+                            <option value="fullstack">Fullstack</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="form-icon">Ícone FontAwesome</label>
+                    <select id="form-icon">
+                        <option value="fa-solid fa-server">fa-server (Backend / Servidor)</option>
+                        <option value="fa-solid fa-leaf">fa-leaf (Spring Boot)</option>
+                        <option value="fa-solid fa-bolt">fa-bolt (Alta Performance / Fila)</option>
+                        <option value="fa-solid fa-wallet">fa-wallet (Finanças / Carteira)</option>
+                        <option value="fa-solid fa-gamepad">fa-gamepad (Jogo / Unity)</option>
+                        <option value="fa-solid fa-graduation-cap">fa-graduation-cap (Acadêmico / ML)</option>
+                        <option value="fa-solid fa-shield-halved">fa-shield-halved (Segurança / Auth)</option>
+                        <option value="fa-solid fa-credit-card">fa-credit-card (Pagamentos)</option>
+                        <option value="fa-solid fa-code">fa-code (Código Geral)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="form-short-desc">Descrição Curta (para os cards da Home) *</label>
+                    <input type="text" id="form-short-desc" required placeholder="Ex: API RESTful desenvolvida em Java e Spring Boot com autenticação JWT.">
+                </div>
+
+                <div class="input-group">
+                    <label for="form-long-desc">Descrição Completa (para a página de detalhes) *</label>
+                    <textarea id="form-long-desc" rows="4" required placeholder="Explique o projeto, o problema resolvido, as funcionalidades principais e detalhes de implementação..."></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label for="form-architecture">Padrão de Arquitetura & Engenharia</label>
+                    <input type="text" id="form-architecture" placeholder="Ex: Arquitetura em Camadas (Layered Architecture) com DTOs, Services e Global Exception Handling">
+                </div>
+
+                <div class="input-group">
+                    <label for="form-tags">Tags / Tecnologias (separadas por vírgula) *</label>
+                    <input type="text" id="form-tags" required placeholder="Ex: Java, Spring Boot, Spring Security, JWT, PostgreSQL, Docker, JUnit 5">
+                </div>
+
+                <div class="input-group">
+                    <label for="form-highlights">Destaques Técnicos (um por linha)</label>
+                    <textarea id="form-highlights" rows="3" placeholder="Ex: Autenticação Stateless com JWT&#10;Containerização completa com Docker Compose&#10;Testes unitários cobrindo services com Mockito"></textarea>
+                </div>
+
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="form-source-url">Link do GitHub (Repositório)</label>
+                        <input type="url" id="form-source-url" placeholder="https://github.com/arthur/meu-projeto">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="form-demo-url">Link de Demonstração / Documentação (Opcional)</label>
+                        <input type="url" id="form-demo-url" placeholder="https://demo-meu-projeto.com">
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="modal-cancel-btn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="form-submit-btn">
+                        <i class="fa-solid fa-floppy-disk"></i> Salvar Projeto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <footer>
+        <div class="container footer-container">
+            <div class="footer-left">
+                <p>&copy; <span id="current-year"></span> <strong>&lt;Diniz.Dev/&gt;</strong>. Painel de Controle.</p>
+            </div>
+            <div class="footer-right">
+                <a href="index.html"><i class="fa-solid fa-house"></i> Voltar ao Portfólio</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
