@@ -32,7 +32,7 @@ public class DataSeeder {
                                 "Testes automatizados cobrindo controllers e services com JUnit 5 e Mockito"
                         ))
                         .architecture("Arquitetura em Camadas (Layered Architecture) com separação estrita de Controller, Service, DTO e Repository")
-                        .sourceUrl("https://github.com/arthur/ecommerce-spring-api")
+                        .sourceUrl("https://github.com/arthursdiniz/ecommerce-spring-api")
                         .demoUrl("https://ecommerce-api-demo.com")
                         .createdAt(LocalDateTime.now().minusDays(15))
                         .build();
@@ -51,7 +51,7 @@ public class DataSeeder {
                                 "Health checks e monitoramento de métricas via Spring Boot Actuator"
                         ))
                         .architecture("Arquitetura Orientada a Eventos (EDA) com padrão Publisher-Subscriber")
-                        .sourceUrl("https://github.com/arthur/task-notification-service")
+                        .sourceUrl("https://github.com/arthursdiniz/task-notification-service")
                         .demoUrl(null)
                         .createdAt(LocalDateTime.now().minusDays(10))
                         .build();
@@ -70,7 +70,7 @@ public class DataSeeder {
                                 "Validações customizadas de CPF/CNPJ e regras de limites operacionais"
                         ))
                         .architecture("Domain-Driven Design (DDD) simplificado com entidades ricas e regras de negócio encapsuladas")
-                        .sourceUrl("https://github.com/arthur/financial-wallet-api")
+                        .sourceUrl("https://github.com/arthursdiniz/financial-wallet-api")
                         .demoUrl(null)
                         .createdAt(LocalDateTime.now().minusDays(5))
                         .build();
@@ -89,7 +89,7 @@ public class DataSeeder {
                                 "Trilha sonora e efeitos de áudio integrados com mixagem dinâmica"
                         ))
                         .architecture("Component-Based Architecture com State Machines e Scriptable Objects")
-                        .sourceUrl("https://github.com/arthur/space-explorer")
+                        .sourceUrl("https://github.com/arthursdiniz/space-explorer")
                         .demoUrl("https://arthur.itch.io/space-explorer")
                         .createdAt(LocalDateTime.now().minusDays(30))
                         .build();
@@ -107,7 +107,7 @@ public class DataSeeder {
                                 "Modelos preditivos treinados com validação cruzada (Cross-Validation)"
                         ))
                         .architecture("Pipeline ETL com Análise Exploratória (EDA) e Modelagem Preditiva")
-                        .sourceUrl("https://github.com/arthur/health-data-analysis")
+                        .sourceUrl("https://github.com/arthursdiniz/health-data-analysis")
                         .demoUrl(null)
                         .createdAt(LocalDateTime.now().minusDays(45))
                         .build();
