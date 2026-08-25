@@ -45,17 +45,7 @@ cd portifolio
 docker compose up -d
 ```
 
-### 3. Configurar as Variáveis de Ambiente (Opcional)
-Você pode criar um arquivo `.env` baseado no `.env.example`:
-```env
-DB_URL=jdbc:postgresql://localhost:5432/portifoliodb
-DB_USERNAME=postgres
-DB_PASSWORD=postgrespassword
-ADMIN_SECRET_KEY=admin123
-PORT=8080
-```
-
-### 4. Executar a Aplicação Spring Boot
+### 3. Executar a Aplicação Spring Boot
 - **No Prompt de Comando (CMD)**:
   ```cmd
   mvnw spring-boot:run
