@@ -229,49 +229,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const contactForm = document.getElementById('contact-form');
-    if (contactForm) {
-        contactForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const submitBtn = contactForm.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<span>Enviando...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
-            submitBtn.disabled = true;
-
-            const name = document.getElementById('name').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const message = document.getElementById('message').value.trim();
-
-            try {
-                const response = await fetch('/api/contact', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, message })
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    showToast(result.message || 'Mensagem enviada com sucesso!', 'success');
-                    contactForm.reset();
-                } else {
-                    let errMsg = result.message || 'Ocorreu um erro ao enviar sua mensagem.';
-                    if (result.validationErrors) {
-                        errMsg = Object.values(result.validationErrors).join(' ');
-                    }
-                    showToast(errMsg, 'error');
-                }
-            } catch (error) {
-                console.error('Erro no envio de mensagem:', error);
-                showToast('Erro de conexão. Verifique se o backend está em execução.', 'error');
-            } finally {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }
-        });
-    }
-
     setupFilters();
     setupSearch();
     revealOnScroll();

@@ -1395,9 +1395,6 @@ ul {
 }
 
 .contact-box {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
     padding: 45px;
     background: #18181b;
 }
@@ -1408,14 +1405,15 @@ ul {
     font-weight: 800;
 }
 
-.contact-info p {
+.contact-info > p {
     color: var(--text-muted);
     margin-bottom: 22px;
+    max-width: 760px;
 }
 
 .contact-details {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
     margin-bottom: 25px;
 }
@@ -1424,6 +1422,11 @@ ul {
     display: flex;
     align-items: center;
     gap: 14px;
+    min-height: 84px;
+    padding: 18px;
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .contact-item i {
@@ -1448,36 +1451,39 @@ ul {
     margin: 0;
     font-weight: 600;
     color: var(--text-main);
+    overflow-wrap: anywhere;
 }
 
 .social-links {
     display: flex;
     gap: 10px;
+    padding-top: 20px;
+    border-top: 1px solid var(--glass-border);
 }
 
 .social-link {
-    width: 40px;
     height: 40px;
+    padding: 0 16px;
     border-radius: 6px;
     background: #27272a;
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 9px;
     font-size: 1.1rem;
     border: 1px solid var(--glass-border);
     transition: var(--transition);
+}
+
+.social-link span {
+    font-size: 0.88rem;
+    font-weight: 600;
 }
 
 .social-link:hover {
     background: var(--primary);
     color: #121214;
     transform: translateY(-2px);
-}
-
-.contact-form {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
 }
 
 .toast {
@@ -1541,7 +1547,7 @@ footer {
 
 @media (max-width: 992px) {
     .hero-content .title { font-size: 2.8rem; }
-    .about-grid, .contact-box, .project-detail-grid { grid-template-columns: 1fr; }
+    .about-grid, .project-detail-grid { grid-template-columns: 1fr; }
     .hero-container { flex-direction: column; text-align: center; }
     .hero-buttons { justify-content: center; }
     .hero-visual { margin-top: 30px; }
@@ -1573,5 +1579,7 @@ footer {
     .hero-content .title { font-size: 2.2rem; }
     .stats-container { grid-template-columns: 1fr; }
     .contact-box { padding: 30px 20px; }
+    .contact-details { grid-template-columns: 1fr; }
+    .social-links { flex-wrap: wrap; }
     .footer-container { flex-direction: column; text-align: center; }
 }
