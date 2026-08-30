@@ -1,26 +1,54 @@
 document.addEventListener('DOMContentLoaded', () => {
+    'use strict';
 
-    const yearEl = document.getElementById('current-year');
-    if (yearEl) yearEl.textContent = new Date().getFullYear();
-
+    const { escapeHTML, iconNameFromClass, refreshIcons, showToast } = window.SiteUI;
     const authOverlay = document.getElementById('auth-overlay');
     const authForm = document.getElementById('auth-form');
     const authKeyInput = document.getElementById('auth-key-input');
     const authError = document.getElementById('auth-error');
-    const toggleKeyBtn = document.getElementById('toggle-key-visibility');
-    const dashboardContent = document.getElementById('admin-dashboard-content');
-    const logoutBtn = document.getElementById('btn-logout');
+    const toggleKeyButton = document.getElementById('toggle-key-visibility');
+    const dashboard = document.getElementById('admin-dashboard-content');
+    const logoutButton = document.getElementById('btn-logout');
     const navLogoutItem = document.getElementById('nav-logout-item');
-
+    const modal = document.getElementById('project-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const projectForm = document.getElementById('project-form');
     let adminKey = sessionStorage.getItem('portfolio_admin_key') || '';
+    let projectsList = [];
+    let lastFocusedElement = null;
 
-    if (toggleKeyBtn && authKeyInput) {
-        toggleKeyBtn.addEventListener('click', () => {
-            const isPassword = authKeyInput.type === 'password';
-            authKeyInput.type = isPassword ? 'text' : 'password';
-            toggleKeyBtn.innerHTML = isPassword ? '<i class="fa-solid fa-eye-slash"></i>' : '<i class="fa-solid fa-eye"></i>';
-        });
-    }
+    const setButtonLoading = (button, isLoading, label) => {
+        if (!button) return;
+        if (isLoading) {
+            button.dataset.originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = `<i data-lucide="loader-circle" class="loading-icon"></i><span>${escapeHTML(label)}</span>`;
+        } else {
+            button.disabled = false;
+            button.innerHTML = button.dataset.originalHtml || button.innerHTML;
+        }
+        refreshIcons(button);
+    };
+
+    const showLockScreen = (message = '') => {
+        if (authOverlay) authOverlay.style.display = 'grid';
+        if (dashboard) dashboard.style.display = 'none';
+        if (navLogoutItem) navLogoutItem.style.display = 'none';
+        if (authError) {
+            authError.textContent = message;
+            authError.style.display = message ? 'block' : 'none';
+        }
+        window.setTimeout(() => authKeyInput?.focus(), 30);
+    };
+
+    const unlockDashboard = () => {
+        if (authOverlay) authOverlay.style.display = 'none';
+        if (dashboard) dashboard.style.display = 'block';
+        if (navLogoutItem) navLogoutItem.style.display = 'block';
+        refreshIcons(document);
+        loadAdminProjects();
+        loadContactMessages();
+    };
 
     const verifyAuth = async (keyToTest) => {
         if (!keyToTest) {
@@ -35,168 +63,127 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ key: keyToTest })
             });
 
-            if (response.ok) {
-                adminKey = keyToTest;
-                sessionStorage.setItem('portfolio_admin_key', adminKey);
-                unlockDashboard();
-                return true;
-            } else {
-                showLockScreen('Chave administrativa incorreta. Tente novamente.');
+            if (!response.ok) {
                 sessionStorage.removeItem('portfolio_admin_key');
                 adminKey = '';
+                showLockScreen('Chave administrativa incorreta. Tente novamente.');
                 return false;
             }
+
+            adminKey = keyToTest;
+            sessionStorage.setItem('portfolio_admin_key', adminKey);
+            unlockDashboard();
+            return true;
         } catch (error) {
             console.error('Erro na autenticação:', error);
-            showLockScreen('Erro de comunicação com o servidor Spring Boot.');
+            showLockScreen('Não foi possível comunicar com o servidor.');
             return false;
         }
     };
 
-    const showLockScreen = (errorMessage = '') => {
-        if (authOverlay) authOverlay.style.display = 'flex';
-        if (dashboardContent) dashboardContent.style.display = 'none';
-        if (navLogoutItem) navLogoutItem.style.display = 'none';
-        if (authError) {
-            if (errorMessage) {
-                authError.textContent = errorMessage;
-                authError.style.display = 'block';
-            } else {
-                authError.style.display = 'none';
-            }
-        }
-        if (authKeyInput) authKeyInput.focus();
-    };
-
-    const unlockDashboard = () => {
-        if (authOverlay) authOverlay.style.display = 'none';
-        if (dashboardContent) dashboardContent.style.display = 'block';
-        if (navLogoutItem) navLogoutItem.style.display = 'block';
-        loadAdminProjects();
-        loadContactMessages();
-    };
-
-    if (authForm) {
-        authForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btn-verify-auth');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span>Verificando...</span> <i class="fa-solid fa-spinner fa-spin"></i>';
-            btn.disabled = true;
-
-            const enteredKey = authKeyInput.value.trim();
-            await verifyAuth(enteredKey);
-
-            btn.innerHTML = originalText;
-            btn.disabled = false;
+    if (toggleKeyButton && authKeyInput) {
+        toggleKeyButton.addEventListener('click', () => {
+            const shouldShow = authKeyInput.type === 'password';
+            authKeyInput.type = shouldShow ? 'text' : 'password';
+            toggleKeyButton.setAttribute('aria-label', shouldShow ? 'Ocultar chave' : 'Mostrar chave');
+            toggleKeyButton.innerHTML = `<i data-lucide="${shouldShow ? 'eye-off' : 'eye'}"></i>`;
+            refreshIcons(toggleKeyButton);
         });
     }
 
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            sessionStorage.removeItem('portfolio_admin_key');
-            adminKey = '';
-            showLockScreen('Sessão encerrada. Digite a chave para acessar novamente.');
-        });
-    }
+    authForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const button = document.getElementById('btn-verify-auth');
+        setButtonLoading(button, true, 'Verificando...');
+        await verifyAuth(authKeyInput.value.trim());
+        setButtonLoading(button, false);
+    });
 
-    const tabBtns = document.querySelectorAll('.admin-tab-btn');
-    const tabContents = document.querySelectorAll('.admin-tab-content');
+    logoutButton?.addEventListener('click', () => {
+        sessionStorage.removeItem('portfolio_admin_key');
+        adminKey = '';
+        showLockScreen('Sessão encerrada. Digite a chave para acessar novamente.');
+    });
 
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            tabBtns.forEach(b => b.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.admin-tab-btn').forEach((button) => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.admin-tab-btn').forEach((item) => {
+                item.classList.remove('active');
+                item.setAttribute('aria-selected', 'false');
+            });
+            document.querySelectorAll('.admin-tab-content').forEach((panel) => {
+                panel.classList.remove('active');
+                panel.hidden = true;
+            });
 
-            btn.classList.add('active');
-            const target = btn.getAttribute('data-tab');
-            const targetEl = document.getElementById(target);
-            if (targetEl) targetEl.classList.add('active');
-
-            if (target === 'tab-messages') {
-                loadContactMessages();
+            button.classList.add('active');
+            button.setAttribute('aria-selected', 'true');
+            const target = document.getElementById(button.dataset.tab);
+            if (target) {
+                target.hidden = false;
+                target.classList.add('active');
             }
+            if (button.dataset.tab === 'tab-messages') loadContactMessages();
         });
     });
 
-    const showToast = (message, type = 'success') => {
-        const toast = document.getElementById('toast');
-        if (!toast) return;
-        toast.className = `toast toast-${type} show`;
-        toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> ${message}`;
-        setTimeout(() => {
-            toast.className = 'toast';
-        }, 4000);
-    };
-
-    let projectsList = [];
-
     const loadAdminProjects = async () => {
-        const tbody = document.getElementById('admin-projects-table-body');
-        const countEl = document.getElementById('project-count');
+        const tableBody = document.getElementById('admin-projects-table-body');
 
         try {
             const response = await fetch('/api/projects');
-            if (response.ok) {
-                projectsList = await response.json();
-                if (countEl) countEl.textContent = projectsList.length;
-                renderAdminProjects(projectsList);
-            }
+            if (!response.ok) throw new Error(`Resposta inesperada: ${response.status}`);
+            projectsList = await response.json();
+            document.getElementById('project-count').textContent = projectsList.length;
+            renderAdminProjects(projectsList);
         } catch (error) {
             console.error('Erro ao buscar projetos:', error);
-            if (tbody) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Erro ao carregar projetos do servidor.</td></tr>';
-            }
+            if (tableBody) tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger py-4">Não foi possível carregar os projetos.</td></tr>';
         }
     };
 
     const renderAdminProjects = (projects) => {
-        const tbody = document.getElementById('admin-projects-table-body');
-        if (!tbody) return;
+        const tableBody = document.getElementById('admin-projects-table-body');
+        if (!tableBody) return;
 
-        if (projects.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">Nenhum projeto cadastrado. Clique no botão "Novo Projeto" para começar!</td></tr>';
+        if (!projects.length) {
+            tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">Nenhum projeto cadastrado.</td></tr>';
             return;
         }
 
-        tbody.innerHTML = '';
-        projects.forEach(p => {
-            const tagsHtml = p.tags ? p.tags.map(t => `<span class="badge-mini">${t}</span>`).join(' ') : '';
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>#${p.id}</strong></td>
-                <td><i class="${p.iconClass || 'fa-solid fa-code'}"></i></td>
-                <td>
-                    <strong>${p.title}</strong>
-                    <div class="text-muted small">${p.shortDescription || ''}</div>
-                </td>
-                <td><span class="project-category-badge">${p.category}</span></td>
-                <td>${tagsHtml}</td>
-                <td>
-                    <div class="table-actions">
-                        <a href="project.html?id=${p.id}" target="_blank" class="btn-action view" title="Visualizar Página"><i class="fa-solid fa-eye"></i></a>
-                        <button class="btn-action edit" onclick="window.editProject(${p.id})" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button class="btn-action delete" onclick="window.deleteProject(${p.id})" title="Excluir"><i class="fa-solid fa-trash-can"></i></button>
-                    </div>
-                </td>
+        tableBody.innerHTML = projects.map((project) => {
+            const tags = Array.isArray(project.tags)
+                ? project.tags.slice(0, 4).map((tag) => `<span class="badge-mini">${escapeHTML(tag)}</span>`).join(' ')
+                : '';
+
+            return `
+                <tr>
+                    <td><strong>#${escapeHTML(project.id)}</strong></td>
+                    <td><i data-lucide="${iconNameFromClass(project.iconClass)}"></i></td>
+                    <td><strong>${escapeHTML(project.title || '')}</strong><div class="text-muted small">${escapeHTML(project.shortDescription || '')}</div></td>
+                    <td><span class="project-category-badge">${escapeHTML(project.category || 'geral')}</span></td>
+                    <td>${tags}</td>
+                    <td>
+                        <div class="table-actions">
+                            <a href="project.html?id=${encodeURIComponent(project.id)}" target="_blank" rel="noopener noreferrer" class="btn-action" aria-label="Visualizar ${escapeHTML(project.title || 'projeto')}"><i data-lucide="eye"></i></a>
+                            <button type="button" class="btn-action edit-project" data-project-id="${escapeHTML(project.id)}" aria-label="Editar ${escapeHTML(project.title || 'projeto')}"><i data-lucide="pencil"></i></button>
+                            <button type="button" class="btn-action delete delete-project" data-project-id="${escapeHTML(project.id)}" aria-label="Excluir ${escapeHTML(project.title || 'projeto')}"><i data-lucide="trash-2"></i></button>
+                        </div>
+                    </td>
+                </tr>
             `;
-            tbody.appendChild(tr);
-        });
+        }).join('');
+        refreshIcons(tableBody);
     };
 
-    const modal = document.getElementById('project-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const openModalBtn = document.getElementById('btn-open-new-project-modal');
-    const closeModalBtn = document.getElementById('modal-close-btn');
-    const cancelModalBtn = document.getElementById('modal-cancel-btn');
-    const projectForm = document.getElementById('project-form');
-
-    const openModal = (isEdit = false, project = null) => {
+    const openModal = (project = null) => {
+        if (!modal || !projectForm) return;
+        lastFocusedElement = document.activeElement;
         projectForm.reset();
         document.getElementById('form-project-id').value = '';
 
-        if (isEdit && project) {
-            modalTitle.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Editar Projeto #${project.id}`;
+        if (project) {
+            modalTitle.textContent = `Editar projeto #${project.id}`;
             document.getElementById('form-project-id').value = project.id;
             document.getElementById('form-title').value = project.title || '';
             document.getElementById('form-category').value = project.category || 'backend';
@@ -204,118 +191,113 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('form-short-desc').value = project.shortDescription || '';
             document.getElementById('form-long-desc').value = project.longDescription || '';
             document.getElementById('form-architecture').value = project.architecture || '';
-            document.getElementById('form-tags').value = project.tags ? project.tags.join(', ') : '';
-            document.getElementById('form-highlights').value = project.highlights ? project.highlights.join('\n') : '';
+            document.getElementById('form-tags').value = Array.isArray(project.tags) ? project.tags.join(', ') : '';
+            document.getElementById('form-highlights').value = Array.isArray(project.highlights) ? project.highlights.join('\n') : '';
             document.getElementById('form-source-url').value = project.sourceUrl || '';
             document.getElementById('form-demo-url').value = project.demoUrl || '';
         } else {
-            modalTitle.innerHTML = `<i class="fa-solid fa-plus-circle"></i> Adicionar Novo Projeto`;
+            modalTitle.textContent = 'Adicionar novo projeto';
         }
 
         modal.classList.add('show');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('modal-open');
+        window.setTimeout(() => document.getElementById('form-title')?.focus(), 30);
     };
 
     const closeModal = () => {
+        if (!modal) return;
         modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
+        lastFocusedElement?.focus();
     };
 
-    if (openModalBtn) openModalBtn.addEventListener('click', () => openModal(false));
-    if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
-    if (cancelModalBtn) cancelModalBtn.addEventListener('click', closeModal);
+    document.getElementById('btn-open-new-project-modal')?.addEventListener('click', () => openModal());
+    document.getElementById('modal-close-btn')?.addEventListener('click', closeModal);
+    document.getElementById('modal-cancel-btn')?.addEventListener('click', closeModal);
+    modal?.addEventListener('click', (event) => {
+        if (event.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && modal?.classList.contains('show')) closeModal();
+    });
 
-    if (projectForm) {
-        projectForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const submitBtn = document.getElementById('form-submit-btn');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...';
-            submitBtn.disabled = true;
-
-            const id = document.getElementById('form-project-id').value;
-            const isEdit = Boolean(id);
-
-            const tagsRaw = document.getElementById('form-tags').value;
-            const tags = tagsRaw.split(',').map(t => t.trim()).filter(t => t.length > 0);
-
-            const highlightsRaw = document.getElementById('form-highlights').value;
-            const highlights = highlightsRaw.split('\n').map(h => h.trim()).filter(h => h.length > 0);
-
-            const payload = {
-                title: document.getElementById('form-title').value.trim(),
-                category: document.getElementById('form-category').value,
-                iconClass: document.getElementById('form-icon').value,
-                shortDescription: document.getElementById('form-short-desc').value.trim(),
-                longDescription: document.getElementById('form-long-desc').value.trim(),
-                architecture: document.getElementById('form-architecture').value.trim(),
-                tags: tags,
-                highlights: highlights,
-                sourceUrl: document.getElementById('form-source-url').value.trim() || null,
-                demoUrl: document.getElementById('form-demo-url').value.trim() || null
-            };
-
-            try {
-                const url = isEdit ? `/api/projects/${id}` : '/api/projects';
-                const method = isEdit ? 'PUT' : 'POST';
-
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Admin-Key': adminKey
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                if (response.ok) {
-                    showToast(`Projeto ${isEdit ? 'atualizado' : 'criado'} com sucesso!`, 'success');
-                    closeModal();
-                    loadAdminProjects();
-                } else if (response.status === 401) {
-                    showToast('Sessão expirada ou não autorizada. Faça login novamente.', 'error');
-                    showLockScreen('Autenticação necessária.');
-                } else {
-                    const err = await response.json();
-                    let errMsg = err.message || 'Erro ao salvar projeto.';
-                    if (err.validationErrors) {
-                        errMsg = Object.values(err.validationErrors).join(' ');
-                    }
-                    showToast(errMsg, 'error');
-                }
-            } catch (error) {
-                console.error('Erro na requisição:', error);
-                showToast('Erro de conexão com o servidor.', 'error');
-            } finally {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }
-        });
-    }
-
-    window.editProject = (id) => {
-        const project = projectsList.find(p => p.id === id);
-        if (project) {
-            openModal(true, project);
+    document.getElementById('admin-projects-table-body')?.addEventListener('click', (event) => {
+        const editButton = event.target.closest('.edit-project');
+        const deleteButton = event.target.closest('.delete-project');
+        if (editButton) {
+            const project = projectsList.find((item) => String(item.id) === editButton.dataset.projectId);
+            if (project) openModal(project);
         }
-    };
+        if (deleteButton) deleteProject(deleteButton.dataset.projectId);
+    });
 
-    window.deleteProject = async (id) => {
-        if (!confirm(`Tem certeza que deseja excluir o projeto #${id}?`)) return;
+    projectForm?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const submitButton = document.getElementById('form-submit-btn');
+        const id = document.getElementById('form-project-id').value;
+        const isEdit = Boolean(id);
+        setButtonLoading(submitButton, true, 'Salvando...');
+
+        const splitValues = (value, separator) => value.split(separator).map((item) => item.trim()).filter(Boolean);
+        const payload = {
+            title: document.getElementById('form-title').value.trim(),
+            category: document.getElementById('form-category').value,
+            iconClass: document.getElementById('form-icon').value,
+            shortDescription: document.getElementById('form-short-desc').value.trim(),
+            longDescription: document.getElementById('form-long-desc').value.trim(),
+            architecture: document.getElementById('form-architecture').value.trim(),
+            tags: splitValues(document.getElementById('form-tags').value, ','),
+            highlights: splitValues(document.getElementById('form-highlights').value, '\n'),
+            sourceUrl: document.getElementById('form-source-url').value.trim() || null,
+            demoUrl: document.getElementById('form-demo-url').value.trim() || null
+        };
 
         try {
-            const response = await fetch(`/api/projects/${id}`, {
+            const response = await fetch(isEdit ? `/api/projects/${encodeURIComponent(id)}` : '/api/projects', {
+                method: isEdit ? 'PUT' : 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Admin-Key': adminKey },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                showToast(`Projeto ${isEdit ? 'atualizado' : 'criado'} com sucesso.`);
+                closeModal();
+                loadAdminProjects();
+            } else if (response.status === 401) {
+                showToast('Sessão expirada. Entre novamente.', 'error');
+                showLockScreen('Autenticação necessária.');
+            } else {
+                const error = await response.json().catch(() => ({}));
+                const validation = error.validationErrors ? Object.values(error.validationErrors).join(' ') : '';
+                showToast(validation || error.message || 'Não foi possível salvar o projeto.', 'error');
+            }
+        } catch (error) {
+            console.error('Erro ao salvar projeto:', error);
+            showToast('Erro de conexão com o servidor.', 'error');
+        } finally {
+            setButtonLoading(submitButton, false);
+        }
+    });
+
+    const deleteProject = async (id) => {
+        if (!window.confirm(`Tem certeza que deseja excluir o projeto #${id}?`)) return;
+
+        try {
+            const response = await fetch(`/api/projects/${encodeURIComponent(id)}`, {
                 method: 'DELETE',
                 headers: { 'X-Admin-Key': adminKey }
             });
 
-            if (response.status === 204 || response.ok) {
-                showToast('Projeto removido com sucesso!', 'success');
+            if (response.ok || response.status === 204) {
+                showToast('Projeto removido com sucesso.');
                 loadAdminProjects();
             } else if (response.status === 401) {
                 showToast('Acesso não autorizado.', 'error');
                 showLockScreen('Autenticação necessária.');
             } else {
-                showToast('Erro ao remover o projeto.', 'error');
+                showToast('Não foi possível remover o projeto.', 'error');
             }
         } catch (error) {
             console.error('Erro ao excluir projeto:', error);
@@ -324,56 +306,38 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const loadContactMessages = async () => {
-        const tbody = document.getElementById('admin-messages-table-body');
-        const countEl = document.getElementById('message-count');
-
+        const tableBody = document.getElementById('admin-messages-table-body');
         try {
-            const response = await fetch('/api/contact', {
-                headers: { 'X-Admin-Key': adminKey }
-            });
-
-            if (response.ok) {
-                const messages = await response.json();
-                if (countEl) countEl.textContent = messages.length;
-                renderContactMessages(messages);
-            } else if (response.status === 401) {
-                showLockScreen('Autenticação necessária para ler mensagens.');
+            const response = await fetch('/api/contact', { headers: { 'X-Admin-Key': adminKey } });
+            if (response.status === 401) {
+                showLockScreen('Autenticação necessária para visualizar os registros.');
+                return;
             }
+            if (!response.ok) throw new Error(`Resposta inesperada: ${response.status}`);
+
+            const messages = await response.json();
+            document.getElementById('message-count').textContent = messages.length;
+            renderContactMessages(messages);
         } catch (error) {
             console.error('Erro ao carregar mensagens:', error);
-            if (tbody) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">Erro ao carregar mensagens.</td></tr>';
-            }
+            if (tableBody) tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Não foi possível carregar as mensagens.</td></tr>';
         }
     };
 
     const renderContactMessages = (messages) => {
-        const tbody = document.getElementById('admin-messages-table-body');
-        if (!tbody) return;
-
-        if (messages.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Nenhuma mensagem recebida ainda.</td></tr>';
+        const tableBody = document.getElementById('admin-messages-table-body');
+        if (!tableBody) return;
+        if (!messages.length) {
+            tableBody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">Nenhuma mensagem registrada.</td></tr>';
             return;
         }
 
-        tbody.innerHTML = '';
-        messages.forEach(m => {
-            const date = m.createdAt ? new Date(m.createdAt).toLocaleString('pt-BR') : '-';
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>#${m.id}</strong></td>
-                <td><small>${date}</small></td>
-                <td><strong>${m.name}</strong></td>
-                <td><a href="mailto:${m.email}" class="highlight">${m.email}</a></td>
-                <td>${m.message}</td>
-            `;
-            tbody.appendChild(tr);
-        });
+        tableBody.innerHTML = messages.map((message) => {
+            const date = message.createdAt ? new Date(message.createdAt).toLocaleString('pt-BR') : '—';
+            return `<tr><td><strong>#${escapeHTML(message.id)}</strong></td><td>${escapeHTML(date)}</td><td><strong>${escapeHTML(message.name || '')}</strong></td><td>${escapeHTML(message.email || '')}</td><td>${escapeHTML(message.message || '')}</td></tr>`;
+        }).join('');
     };
 
-    if (adminKey) {
-        verifyAuth(adminKey);
-    } else {
-        showLockScreen();
-    }
+    if (adminKey) verifyAuth(adminKey);
+    else showLockScreen();
 });

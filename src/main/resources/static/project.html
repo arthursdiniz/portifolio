@@ -3,158 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes do Projeto | &lt;Diniz.Dev/&gt;</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta name="description" content="Detalhes técnicos de um projeto desenvolvido por Arthur Diniz.">
+    <meta name="theme-color" content="#0d0f12">
+    <title>Detalhes do Projeto | Arthur Diniz</title>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="page-project">
+    <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
 
-    <nav class="navbar scrolled">
+    <nav class="navbar scrolled" aria-label="Navegação principal">
         <div class="nav-container">
-            <a href="index.html" class="logo">
-                <span class="logo-bracket">&lt;</span><span class="logo-name">Diniz</span><span class="logo-dot">.</span><span class="logo-highlight">Dev/&gt;</span>
+            <a href="index.html" class="logo" aria-label="Arthur Diniz — página inicial">
+                <span class="logo-mark">AD</span>
+                <span class="logo-copy"><strong>Arthur Diniz</strong><small>Backend Developer</small></span>
             </a>
-            <ul class="nav-links">
+            <ul class="nav-links" id="primary-navigation">
                 <li><a href="index.html#home">Início</a></li>
                 <li><a href="index.html#about">Sobre</a></li>
                 <li><a href="index.html#projects" class="active">Projetos</a></li>
                 <li><a href="index.html#contact">Contato</a></li>
-                <li><a href="/swagger-ui/index.html" target="_blank" class="nav-badge-link"><i class="fa-solid fa-code"></i> Swagger API</a></li>
-                <li><a href="admin.html" class="nav-admin-link"><i class="fa-solid fa-gear"></i> Painel</a></li>
+                <li><a href="/swagger-ui/index.html" target="_blank" rel="noopener noreferrer" class="nav-badge-link"><i data-lucide="braces"></i> Swagger API</a></li>
+                <li><a href="admin.html" class="nav-admin-link"><i data-lucide="settings-2"></i> Painel</a></li>
             </ul>
-            <div class="hamburger">
-                <i class="fas fa-bars"></i>
-            </div>
+            <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-label="Abrir menu"><i data-lucide="menu"></i></button>
         </div>
     </nav>
+    <div class="nav-scrim" aria-hidden="true"></div>
 
-    <main class="project-detail-main section">
+    <main class="project-detail-main section" id="main-content">
         <div class="container">
-
             <div class="project-nav-bar">
-                <a href="index.html#projects" class="btn-back">
-                    <i class="fa-solid fa-arrow-left"></i> Voltar para Todos os Projetos
-                </a>
-                <div class="project-quick-actions" id="header-action-buttons">
-
-                </div>
+                <a href="index.html#projects" class="btn-back"><i data-lucide="arrow-left"></i> Todos os projetos</a>
+                <div class="project-quick-actions" id="header-action-buttons"></div>
             </div>
 
-            <div id="project-loader" class="loading-spinner">
-                <i class="fa-solid fa-circle-notch fa-spin"></i>
-                <p>Carregando informações completas do projeto via API...</p>
+            <div id="project-loader" class="loading-spinner" role="status">
+                <i data-lucide="loader-circle"></i>
+                <p>Carregando informações do projeto...</p>
             </div>
 
-            <div id="project-content" class="project-detail-container" style="display: none;">
-
-                <div class="project-detail-header glass-box">
+            <article id="project-content" class="project-detail-container" style="display: none;">
+                <header class="project-detail-header">
                     <div class="project-header-info">
                         <div class="project-meta">
                             <span class="project-category-badge" id="detail-category">Backend</span>
-                            <span class="project-date" id="detail-date"><i class="fa-regular fa-calendar"></i> Recente</span>
+                            <span class="project-date" id="detail-date"><i data-lucide="calendar-days"></i> Recente</span>
                         </div>
                         <h1 class="project-detail-title" id="detail-title">Nome do Projeto</h1>
                         <p class="project-detail-lead" id="detail-short-desc">Resumo curto da aplicação e propósito.</p>
                     </div>
-                    <div class="project-header-icon" id="detail-icon-box">
-                        <i class="fa-solid fa-server" id="detail-icon"></i>
+                    <div class="project-header-icon" id="detail-icon-box" aria-hidden="true">
+                        <i data-lucide="server" id="detail-icon"></i>
                     </div>
-                </div>
+                </header>
 
                 <div class="project-detail-grid">
-
                     <div class="project-detail-body">
-
-                        <section class="detail-card glass-box">
+                        <section class="detail-card" aria-labelledby="overview-title">
                             <div class="detail-card-header">
-                                <i class="fa-solid fa-circle-info"></i>
-                                <h2>Visão Geral da Solução</h2>
+                                <span class="detail-section-number">01</span>
+                                <h2 id="overview-title">Visão geral da solução</h2>
                             </div>
-                            <div class="detail-card-content">
-                                <p id="detail-long-desc">Descrição completa do projeto...</p>
-                            </div>
+                            <div class="detail-card-content"><p id="detail-long-desc">Descrição completa do projeto...</p></div>
                         </section>
 
-                        <section class="detail-card glass-box">
+                        <section class="detail-card" aria-labelledby="highlights-title">
                             <div class="detail-card-header">
-                                <i class="fa-solid fa-star"></i>
-                                <h2>Destaques & Implementações Técnicas</h2>
+                                <span class="detail-section-number">02</span>
+                                <h2 id="highlights-title">Destaques técnicos</h2>
                             </div>
-                            <div class="detail-card-content">
-                                <ul class="highlights-list" id="detail-highlights">
-
-                                </ul>
-                            </div>
+                            <div class="detail-card-content"><ul class="highlights-list" id="detail-highlights"></ul></div>
                         </section>
 
-                        <section class="detail-card glass-box">
+                        <section class="detail-card" aria-labelledby="architecture-title">
                             <div class="detail-card-header">
-                                <i class="fa-solid fa-layer-group"></i>
-                                <h2>Padrão de Arquitetura & Engenharia</h2>
+                                <span class="detail-section-number">03</span>
+                                <h2 id="architecture-title">Arquitetura & engenharia</h2>
                             </div>
                             <div class="detail-card-content">
                                 <div class="architecture-box">
-                                    <div class="arch-badge"><i class="fa-solid fa-diagram-project"></i> Arquitetura</div>
-                                    <p id="detail-architecture">Arquitetura em Camadas...</p>
+                                    <div class="arch-badge"><i data-lucide="network"></i> Abordagem</div>
+                                    <p id="detail-architecture">Arquitetura em camadas...</p>
                                 </div>
                             </div>
                         </section>
                     </div>
 
-                    <aside class="project-detail-sidebar">
-
-                        <div class="sidebar-card glass-box">
-                            <h3><i class="fa-solid fa-link"></i> Acessos & Código</h3>
-                            <div class="sidebar-links" id="detail-links">
-
-                            </div>
+                    <aside class="project-detail-sidebar" aria-label="Informações complementares">
+                        <div class="sidebar-card">
+                            <h3><i data-lucide="link-2"></i> Acessos & código</h3>
+                            <div class="sidebar-links" id="detail-links"></div>
                         </div>
 
-                        <div class="sidebar-card glass-box">
-                            <h3><i class="fa-solid fa-microchip"></i> Tecnologias & Bibliotecas</h3>
-                            <div class="detail-tags-cloud" id="detail-tags">
-
-                            </div>
+                        <div class="sidebar-card">
+                            <h3><i data-lucide="layers-3"></i> Tecnologias</h3>
+                            <div class="detail-tags-cloud" id="detail-tags"></div>
                         </div>
 
-                        <div class="sidebar-card glass-box swagger-card">
-                            <h3><i class="fa-solid fa-terminal"></i> Testar no Swagger</h3>
-                            <p>Esta aplicação possui documentação interativa completa disponível.</p>
-                            <a href="/swagger-ui/index.html" target="_blank" class="btn btn-outline w-100">
-                                <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir Swagger UI
+                        <div class="sidebar-card swagger-card">
+                            <span class="sidebar-kicker">Documentação executável</span>
+                            <h3><i data-lucide="terminal-square"></i> Swagger UI</h3>
+                            <p>Explore os contratos e endpoints disponíveis nesta aplicação.</p>
+                            <a href="/swagger-ui/index.html" target="_blank" rel="noopener noreferrer" class="btn btn-secondary w-100">
+                                Abrir documentação <i data-lucide="arrow-up-right"></i>
                             </a>
                         </div>
                     </aside>
                 </div>
-            </div>
+            </article>
 
-            <div id="project-error" class="project-not-found glass-box" style="display: none;">
-                <i class="fa-solid fa-triangle-exclamation error-icon"></i>
-                <h2>Projeto Não Encontrado</h2>
+            <div id="project-error" class="project-not-found" style="display: none;" role="alert">
+                <i data-lucide="circle-alert" class="error-icon"></i>
+                <p class="eyebrow">Erro 404</p>
+                <h2>Projeto não encontrado</h2>
                 <p>O projeto que você está procurando não existe ou foi removido.</p>
-                <a href="index.html#projects" class="btn btn-primary"><i class="fa-solid fa-arrow-left"></i> Voltar aos Projetos</a>
+                <a href="index.html#projects" class="btn btn-primary"><i data-lucide="arrow-left"></i> Voltar aos projetos</a>
             </div>
-
         </div>
     </main>
 
     <footer>
         <div class="container footer-container">
-            <div class="footer-left">
-                <p>&copy; <span id="current-year"></span> <strong>&lt;Diniz.Dev/&gt;</strong>. Desenvolvido com Java 25 & Spring Boot.</p>
-            </div>
+            <div class="footer-left"><strong>Arthur Diniz</strong><p>&copy; <span id="current-year"></span> · Detalhes técnicos do portfólio.</p></div>
             <div class="footer-right">
-                <a href="index.html#projects"><i class="fa-solid fa-arrow-left"></i> Ver Todos os Projetos</a>
-                <span>•</span>
-                <a href="/swagger-ui/index.html" target="_blank"><i class="fa-solid fa-code"></i> Swagger API</a>
+                <a href="index.html#projects">Todos os projetos <i data-lucide="arrow-left"></i></a>
+                <a href="/swagger-ui/index.html" target="_blank" rel="noopener noreferrer">Swagger API <i data-lucide="arrow-up-right"></i></a>
             </div>
         </div>
     </footer>
 
+    <script src="vendor/lucide.min.js"></script>
+    <script src="js/site.js"></script>
     <script src="js/project-detail.js"></script>
 </body>
 </html>

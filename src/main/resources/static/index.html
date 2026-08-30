@@ -3,256 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>&lt;Diniz.Dev/&gt; | Desenvolvedor Java & Spring Boot</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta name="description" content="Portfólio de Arthur Diniz, desenvolvedor backend focado em Java, Spring Boot, APIs seguras e arquitetura de software.">
+    <meta name="theme-color" content="#0d0f12">
+    <title>Arthur Diniz | Desenvolvedor Java & Spring Boot</title>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="page-home">
+    <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
 
-    <nav class="navbar">
+    <nav class="navbar" aria-label="Navegação principal">
         <div class="nav-container">
-            <a href="index.html" class="logo">
-                <span class="logo-bracket">&lt;</span><span class="logo-name">Diniz</span><span class="logo-dot">.</span><span class="logo-highlight">Dev/&gt;</span>
+            <a href="#home" class="logo" aria-label="Arthur Diniz — página inicial">
+                <span class="logo-mark">AD</span>
+                <span class="logo-copy">
+                    <strong>Arthur Diniz</strong>
+                    <small>Backend Developer</small>
+                </span>
             </a>
-            <ul class="nav-links">
+
+            <ul class="nav-links" id="primary-navigation">
                 <li><a href="#home">Início</a></li>
                 <li><a href="#about">Sobre</a></li>
                 <li><a href="#projects">Projetos</a></li>
                 <li><a href="#contact">Contato</a></li>
-                <li><a href="/swagger-ui/index.html" target="_blank" class="nav-badge-link"><i class="fa-solid fa-code"></i> Swagger API</a></li>
-                <li><a href="admin.html" class="nav-admin-link"><i class="fa-solid fa-gear"></i> Painel</a></li>
+                <li>
+                    <a href="/swagger-ui/index.html" target="_blank" rel="noopener noreferrer" class="nav-badge-link">
+                        <i data-lucide="braces"></i> Swagger API
+                    </a>
+                </li>
+                <li>
+                    <a href="admin.html" class="nav-admin-link" aria-label="Abrir painel administrativo">
+                        <i data-lucide="settings-2"></i> Painel
+                    </a>
+                </li>
             </ul>
-            <div class="hamburger">
-                <i class="fas fa-bars"></i>
-            </div>
+
+            <button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-label="Abrir menu">
+                <i data-lucide="menu"></i>
+            </button>
         </div>
     </nav>
+    <div class="nav-scrim" aria-hidden="true"></div>
 
-    <section id="home" class="hero section">
-        <div class="container hero-container">
-            <div class="hero-content reveal-left">
-                <div class="status-badge">
-                    <span class="pulse-dot"></span> Backend Online • Java 25 & Spring Boot
-                </div>
-                <p class="subtitle">Desenvolvedor Backend em Formação</p>
-                <h1 class="title">Construindo Sistemas <br><span class="gradient-text">Robustos & Escaláveis</span></h1>
-                <p class="description">
-                    Focado no ecossistema <strong>Java & Spring Boot</strong>, desenvolvendo APIs RESTful seguras, arquiteturas limpas, bancos relacionais e microsserviços. Em busca de uma oportunidade de <strong>Estágio / Júnior</strong> para gerar impacto real.
-                </p>
-                <div class="hero-buttons">
-                    <a href="#projects" class="btn btn-primary"><i class="fa-solid fa-folder-open"></i> Explorar Projetos</a>
-                    <a href="/swagger-ui/index.html" target="_blank" class="btn btn-outline"><i class="fa-solid fa-terminal"></i> Testar API (Swagger)</a>
-                    <a href="#contact" class="btn btn-secondary"><i class="fa-solid fa-paper-plane"></i> Contato</a>
-                </div>
-            </div>
-
-            <div class="hero-visual reveal-right">
-                <div class="glass-card main-glass">
-                    <div class="card-header">
-                        <div class="dots">
-                            <span class="dot close"></span>
-                            <span class="dot minimize"></span>
-                            <span class="dot expand"></span>
-                        </div>
-                        <span class="card-title-bar">DinizDeveloper.java</span>
+    <main id="main-content">
+        <section id="home" class="hero section" aria-labelledby="hero-title">
+            <div class="hero-grid-pattern" aria-hidden="true"></div>
+            <div class="container hero-container">
+                <div class="hero-content reveal-left">
+                    <div class="status-badge">
+                        <span class="pulse-dot" aria-hidden="true"></span>
+                        Disponível para estágio ou posição júnior
                     </div>
-                    <div class="card-body">
-                        <pre><code><span class="code-keyword">@RestController</span>
-<span class="code-keyword">public class</span> <span class="code-class">DinizDev</span> {
+                    <p class="eyebrow">Java 25 · Spring Boot · APIs REST</p>
+                    <h1 class="title" id="hero-title">Backend sólido para produtos que precisam <span class="highlight">crescer.</span></h1>
+                    <p class="description">
+                        Sou Arthur Diniz, desenvolvedor focado em criar APIs seguras, arquiteturas organizadas e integrações confiáveis com o ecossistema <strong>Java & Spring Boot</strong>.
+                    </p>
+                    <div class="hero-buttons">
+                        <a href="#projects" class="btn btn-primary">
+                            Ver projetos <i data-lucide="arrow-down-right"></i>
+                        </a>
+                        <a href="https://github.com/arthursdiniz" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+                            <i data-lucide="github"></i> GitHub
+                        </a>
+                        <a href="/swagger-ui/index.html" target="_blank" rel="noopener noreferrer" class="text-link">
+                            Explorar a API <i data-lucide="external-link"></i>
+                        </a>
+                    </div>
+                </div>
 
-    <span class="code-keyword">private final String</span> focus = <span class="code-string">"Java & Spring Boot"</span>;
-    <span class="code-keyword">private final String[]</span> stack = {
-        <span class="code-string">"Spring Boot"</span>, <span class="code-string">"JPA/Hibernate"</span>,
-        <span class="code-string">"PostgreSQL"</span>, <span class="code-string">"Docker"</span>, <span class="code-string">"JWT"</span>
-    };
+                <div class="hero-visual reveal-right" aria-label="Exemplo de código Java">
+                    <div class="code-window">
+                        <div class="code-window-header">
+                            <div class="window-controls" aria-hidden="true">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <span>DeveloperProfile.java</span>
+                            <span class="code-window-status"><i data-lucide="check"></i> compilado</span>
+                        </div>
+                        <div class="code-window-body">
+                            <ol class="code-lines" aria-hidden="true">
+                                <li>01</li><li>02</li><li>03</li><li>04</li><li>05</li><li>06</li><li>07</li><li>08</li><li>09</li><li>10</li><li>11</li><li>12</li><li>13</li>
+                            </ol>
+                            <pre><code><span class="code-annotation">@RestController</span>
+<span class="code-keyword">public class</span> <span class="code-type">DeveloperProfile</span> {
 
-    <span class="code-keyword">@GetMapping</span>(<span class="code-string">"/status"</span>)
-    <span class="code-keyword">public</span> Response <span class="code-method">getGoal</span>() {
-        <span class="code-keyword">return</span> <span class="code-keyword">new</span> Response(<span class="code-string">"Pronto para somar no time!"</span>);
-    }
+  <span class="code-keyword">private final</span> Stack stack =
+      Stack.<span class="code-method">of</span>(<span class="code-string">"Java"</span>, <span class="code-string">"Spring Boot"</span>);
+
+  <span class="code-annotation">@GetMapping</span>(<span class="code-string">"/status"</span>)
+  <span class="code-keyword">public</span> Status <span class="code-method">current</span>() {
+    <span class="code-keyword">return</span> Status.<span class="code-method">ready</span>(
+        <span class="code-string">"Pronto para contribuir"</span>
+    );
+  }
 }</code></pre>
-                    </div>
-                </div>
-
-                <div class="floating-icon icon-java" title="Java"><i class="fa-brands fa-java"></i></div>
-                <div class="floating-icon icon-spring" title="Spring Boot"><i class="fa-solid fa-leaf"></i></div>
-                <div class="floating-icon icon-docker" title="Docker"><i class="fa-brands fa-docker"></i></div>
-            </div>
-        </div>
-    </section>
-
-    <section id="about" class="about section">
-        <div class="container">
-            <div class="section-header reveal-up">
-                <h2>Sobre <span class="highlight">Mim</span></h2>
-                <div class="underline"></div>
-            </div>
-            <div class="about-grid">
-                <div class="about-text reveal-left">
-                    <h3>Transformando lógica em soluções eficientes.</h3>
-                    <p>
-                        Olá! Sou Arthur Diniz, estudante de tecnologia e desenvolvedor focado no ecossistema <strong>Java e Spring Boot</strong>. Tenho grande paixão por engenharia de software, modelagem de dados, arquitetura em camadas e boas práticas de código limpo.
-                    </p>
-                    <p>
-                        Desenvolvo projetos aplicando <strong>Clean Code, DTOs, Bean Validation, tratamento global de erros, Spring Security com JWT e documentação OpenAPI 3</strong>. Além do backend, também gosto de explorar desenvolvimento de jogos e criar interfaces modernas.
-                    </p>
-                    <p>
-                        Estou em busca da minha <strong>primeira oportunidade profissional (Estágio / Júnior)</strong> onde possa colaborar ativamente em projetos desafiadores, aprender com desenvolvedores experientes e acelerar minha evolução técnica.
-                    </p>
-                    <div class="stats-container">
-                        <div class="stat-item glass-box">
-                            <span class="stat-number">100%</span>
-                            <span class="stat-label">Dedicação & Aprendizado</span>
                         </div>
-                        <div class="stat-item glass-box">
-                            <span class="stat-number">Java 25</span>
-                            <span class="stat-label">Spring Boot Moderno</span>
-                        </div>
-                        <div class="stat-item glass-box">
-                            <span class="stat-number">REST</span>
-                            <span class="stat-label">APIs Documentadas</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="skills-container reveal-right">
-                    <h3>Habilidades Técnicas</h3>
-                    <div class="skill-category">
-                        <h4><i class="fa-solid fa-server"></i> Backend & Java</h4>
-                        <div class="skill-tags">
-                            <span class="skill-tag"><i class="fa-brands fa-java"></i> Java</span>
-                            <span class="skill-tag"><i class="fa-solid fa-leaf"></i> Spring Boot</span>
-                            <span class="skill-tag">Spring Data JPA</span>
-                            <span class="skill-tag">Spring Security & JWT</span>
-                            <span class="skill-tag">Hibernate / ORM</span>
-                            <span class="skill-tag">RESTful APIs</span>
-                            <span class="skill-tag">Bean Validation</span>
-                        </div>
-                    </div>
-                    <div class="skill-category">
-                        <h4><i class="fa-solid fa-database"></i> Bancos de Dados & Ferramentas</h4>
-                        <div class="skill-tags">
-                            <span class="skill-tag">PostgreSQL</span>
-                            <span class="skill-tag">H2 Database</span>
-                            <span class="skill-tag">MySQL</span>
-                            <span class="skill-tag"><i class="fa-brands fa-docker"></i> Docker</span>
-                            <span class="skill-tag"><i class="fa-brands fa-git-alt"></i> Git / GitHub</span>
-                            <span class="skill-tag">Maven</span>
-                            <span class="skill-tag">Swagger / OpenAPI</span>
-                            <span class="skill-tag">JUnit 5 & Mockito</span>
-                        </div>
-                    </div>
-                    <div class="skill-category">
-                        <h4><i class="fa-solid fa-gamepad"></i> Game Dev & Outros</h4>
-                        <div class="skill-tags">
-                            <span class="skill-tag"><i class="fa-brands fa-unity"></i> Unity</span>
-                            <span class="skill-tag">C#</span>
-                            <span class="skill-tag"><i class="fa-brands fa-python"></i> Python</span>
-                            <span class="skill-tag">HTML5 / CSS3 / JS</span>
+                        <div class="code-window-footer">
+                            <span><i data-lucide="coffee"></i> Java 25</span>
+                            <span><i data-lucide="leaf"></i> Spring Boot</span>
+                            <span><i data-lucide="database"></i> PostgreSQL</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section id="projects" class="projects section">
-        <div class="container">
-            <div class="section-header reveal-up">
-                <h2>Meus <span class="highlight">Projetos</span></h2>
-                <p class="section-subtitle">Clique em qualquer projeto para abrir a página detalhada com arquitetura, código e demonstração.</p>
-                <div class="underline"></div>
-            </div>
+        <section id="about" class="about section" aria-labelledby="about-title">
+            <div class="container">
+                <header class="section-header section-header-left reveal-up">
+                    <p class="eyebrow">01 — Sobre</p>
+                    <h2 id="about-title">Engenharia com <span class="highlight">fundamento.</span></h2>
+                    <p class="section-subtitle">Mais do que fazer funcionar: estruturar para ser seguro, legível e fácil de evoluir.</p>
+                </header>
 
-            <div class="projects-toolbar reveal-up">
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
-                    <input type="text" id="project-search" placeholder="Pesquisar projetos (ex: Spring, JWT, Docker, REST, Unity)...">
-                    <button id="clear-search" class="clear-btn" title="Limpar busca"><i class="fa-solid fa-xmark"></i></button>
-                </div>
+                <div class="about-grid">
+                    <div class="about-text reveal-left">
+                        <h3>Transformando lógica em soluções eficientes.</h3>
+                        <p>
+                            Sou estudante de tecnologia e desenvolvedor backend focado em Java e Spring Boot. Gosto de entender o problema antes do código, modelar os dados com cuidado e construir serviços com responsabilidades claras.
+                        </p>
+                        <p>
+                            Meus projetos aplicam <strong>Clean Code, DTOs, Bean Validation, tratamento global de erros, autenticação JWT, testes automatizados e documentação OpenAPI</strong>.
+                        </p>
+                        <p>
+                            Busco minha primeira oportunidade profissional para colaborar em produtos reais, aprender com um time experiente e evoluir como engenheiro de software.
+                        </p>
 
-                <div class="filters">
-                    <button class="filter-btn active" data-filter="all">Todos</button>
-                    <button class="filter-btn" data-filter="backend"><i class="fa-solid fa-server"></i> Backend (Java)</button>
-                    <button class="filter-btn" data-filter="game"><i class="fa-solid fa-gamepad"></i> Jogos</button>
-                    <button class="filter-btn" data-filter="academic"><i class="fa-solid fa-graduation-cap"></i> Acadêmicos</button>
-                </div>
-            </div>
+                        <dl class="stats-container" aria-label="Resumo técnico">
+                            <div class="stat-item"><dt class="stat-number">Java 25</dt><dd class="stat-label">Base atual</dd></div>
+                            <div class="stat-item"><dt class="stat-number">REST</dt><dd class="stat-label">APIs documentadas</dd></div>
+                            <div class="stat-item"><dt class="stat-number">12</dt><dd class="stat-label">Testes automatizados</dd></div>
+                        </dl>
+                    </div>
 
-            <div class="projects-grid" id="projects-grid">
-                <div class="loading-spinner">
-                    <i class="fa-solid fa-circle-notch fa-spin"></i>
-                    <p>Carregando projetos da API Spring Boot...</p>
-                </div>
-            </div>
-
-            <div class="more-projects reveal-up">
-                <a href="admin.html" class="btn btn-outline"><i class="fa-solid fa-plus-circle"></i> Adicionar Mais Projetos (Painel)</a>
-                <a href="https://github.com/arthursdiniz" target="_blank" class="btn btn-secondary"><i class="fa-brands fa-github"></i> Ver perfil no GitHub</a>
-            </div>
-        </div>
-    </section>
-
-    <section id="contact" class="contact section">
-        <div class="container">
-            <div class="contact-box glass-box reveal-up">
-                <div class="contact-info">
-                    <h2>Minhas <span class="highlight">Informações</span></h2>
-                    <p>
-                        Estou disponível para <strong>vagas de estágio ou júnior</strong> e novos desafios. Confira abaixo meus dados e perfis profissionais.
-                    </p>
-
-                    <div class="contact-details">
-                        <div class="contact-item">
-                            <i class="fa-solid fa-envelope"></i>
-                            <div>
-                                <span>E-mail</span>
-                                <p>diniz.arthur@gmail.com</p>
+                    <div class="skills-container reveal-right">
+                        <div class="skill-category">
+                            <div class="skill-category-heading">
+                                <i data-lucide="server"></i>
+                                <div><span>Fundação</span><h3>Backend & Java</h3></div>
+                            </div>
+                            <div class="skill-tags">
+                                <span class="skill-tag">Java</span><span class="skill-tag">Spring Boot</span><span class="skill-tag">Spring Data JPA</span><span class="skill-tag">Spring Security</span><span class="skill-tag">Hibernate</span><span class="skill-tag">RESTful APIs</span><span class="skill-tag">Bean Validation</span>
                             </div>
                         </div>
-                        <div class="contact-item">
-                            <i class="fa-solid fa-location-dot"></i>
-                            <div>
-                                <span>Localização</span>
-                                <p>Santos-SP (Disponível para Remoto / Híbrido)</p>
+                        <div class="skill-category">
+                            <div class="skill-category-heading">
+                                <i data-lucide="database"></i>
+                                <div><span>Infraestrutura</span><h3>Dados & Ferramentas</h3></div>
+                            </div>
+                            <div class="skill-tags">
+                                <span class="skill-tag">PostgreSQL</span><span class="skill-tag">H2</span><span class="skill-tag">MySQL</span><span class="skill-tag">Docker</span><span class="skill-tag">Git / GitHub</span><span class="skill-tag">Maven</span><span class="skill-tag">OpenAPI</span><span class="skill-tag">JUnit & Mockito</span>
+                            </div>
+                        </div>
+                        <div class="skill-category">
+                            <div class="skill-category-heading">
+                                <i data-lucide="boxes"></i>
+                                <div><span>Exploração</span><h3>Outras tecnologias</h3></div>
+                            </div>
+                            <div class="skill-tags">
+                                <span class="skill-tag">Unity</span><span class="skill-tag">C#</span><span class="skill-tag">Python</span><span class="skill-tag">HTML / CSS / JS</span>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
 
-                    <div class="social-links">
-                        <a href="https://www.linkedin.com/in/arthur-sdiniz/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Ver perfil de Arthur Diniz no LinkedIn">
-                            <i class="fa-brands fa-linkedin-in"></i>
-                            <span>LinkedIn</span>
-                        </a>
-                        <a href="https://github.com/arthursdiniz" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Ver perfil de Arthur Diniz no GitHub">
-                            <i class="fa-brands fa-github"></i>
-                            <span>GitHub</span>
-                        </a>
+        <section id="projects" class="projects section" aria-labelledby="projects-title">
+            <div class="container">
+                <header class="section-header section-header-left reveal-up">
+                    <p class="eyebrow">02 — Projetos</p>
+                    <div class="section-heading-row">
+                        <div>
+                            <h2 id="projects-title">Trabalho em <span class="highlight">prática.</span></h2>
+                            <p class="section-subtitle">Arquitetura, decisões técnicas e código — não apenas telas finais.</p>
+                        </div>
+                        <span class="section-index">API-driven portfolio</span>
+                    </div>
+                </header>
+
+                <div class="projects-toolbar reveal-up" aria-label="Ferramentas para filtrar projetos">
+                    <label class="search-box" for="project-search">
+                        <i data-lucide="search" class="search-icon"></i>
+                        <span class="sr-only">Pesquisar projetos</span>
+                        <input type="search" id="project-search" placeholder="Buscar por projeto ou tecnologia..." autocomplete="off">
+                        <button id="clear-search" class="clear-btn" type="button" aria-label="Limpar busca"><i data-lucide="x"></i></button>
+                    </label>
+
+                    <div class="filters" role="group" aria-label="Filtrar por categoria">
+                        <button class="filter-btn active" type="button" data-filter="all" aria-pressed="true">Todos</button>
+                        <button class="filter-btn" type="button" data-filter="backend" aria-pressed="false">Backend</button>
+                        <button class="filter-btn" type="button" data-filter="game" aria-pressed="false">Jogos</button>
+                        <button class="filter-btn" type="button" data-filter="academic" aria-pressed="false">Acadêmicos</button>
+                    </div>
+                </div>
+
+                <div class="projects-grid" id="projects-grid" aria-live="polite" aria-busy="true">
+                    <div class="loading-spinner"><i data-lucide="loader-circle"></i><p>Carregando projetos...</p></div>
+                </div>
+
+                <div class="more-projects reveal-up">
+                    <a href="https://github.com/arthursdiniz" target="_blank" rel="noopener noreferrer" class="text-link">
+                        Ver todos no GitHub <i data-lucide="arrow-up-right"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact section" aria-labelledby="contact-title">
+            <div class="container">
+                <div class="contact-layout reveal-up">
+                    <header class="contact-intro">
+                        <p class="eyebrow">03 — Contato</p>
+                        <h2 id="contact-title">Minhas <span class="highlight">informações.</span></h2>
+                        <p>Disponível para vagas de estágio ou júnior, em modelo remoto ou híbrido.</p>
+                    </header>
+
+                    <div class="contact-content">
+                        <dl class="contact-details">
+                            <div class="contact-item"><dt><i data-lucide="mail"></i> E-mail</dt><dd>diniz.arthur@gmail.com</dd></div>
+                            <div class="contact-item"><dt><i data-lucide="map-pin"></i> Localização</dt><dd>Santos, SP · Brasil</dd></div>
+                        </dl>
+
+                        <div class="social-links" aria-label="Perfis profissionais">
+                            <a href="https://www.linkedin.com/in/arthur-sdiniz/" target="_blank" rel="noopener noreferrer" class="social-link">
+                                <i data-lucide="linkedin"></i><span>LinkedIn</span><i data-lucide="arrow-up-right"></i>
+                            </a>
+                            <a href="https://github.com/arthursdiniz" target="_blank" rel="noopener noreferrer" class="social-link">
+                                <i data-lucide="github"></i><span>GitHub</span><i data-lucide="arrow-up-right"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
     <footer>
         <div class="container footer-container">
             <div class="footer-left">
-                <p>&copy; <span id="current-year"></span> <strong>&lt;Diniz.Dev/&gt;</strong>. Desenvolvido com Java 25 & Spring Boot.</p>
+                <strong>Arthur Diniz</strong>
+                <p>&copy; <span id="current-year"></span> · Desenvolvido com Java 25 & Spring Boot.</p>
             </div>
             <div class="footer-right">
-                <a href="/swagger-ui/index.html" target="_blank"><i class="fa-solid fa-code"></i> OpenAPI Docs</a>
-                <span>•</span>
-                <a href="admin.html"><i class="fa-solid fa-lock"></i> Área de Gerenciamento</a>
+                <a href="/swagger-ui/index.html" target="_blank" rel="noopener noreferrer">OpenAPI Docs <i data-lucide="arrow-up-right"></i></a>
+                <a href="admin.html">Área de gerenciamento <i data-lucide="lock-keyhole"></i></a>
             </div>
         </div>
     </footer>
 
-    <div id="toast" class="toast"></div>
+    <div id="toast" class="toast" aria-live="polite"></div>
 
+    <script src="vendor/lucide.min.js"></script>
+    <script src="js/site.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

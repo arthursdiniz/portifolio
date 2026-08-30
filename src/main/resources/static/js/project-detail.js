@@ -1,19 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    'use strict';
 
-    const yearEl = document.getElementById('current-year');
-    if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-    const hamburger = document.querySelector('.hamburger');
-    const navLinks = document.querySelector('.nav-links');
-    if (hamburger && navLinks) {
-        hamburger.addEventListener('click', () => {
-            navLinks.classList.toggle('nav-active');
-        });
-    }
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const projectId = urlParams.get('id');
-
+    const projectId = new URLSearchParams(window.location.search).get('id');
     if (!projectId) {
         showErrorState();
         return;
@@ -23,20 +11,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadProjectDetails(id) {
-    const loader = document.getElementById('project-loader');
-    const content = document.getElementById('project-content');
-    const errorEl = document.getElementById('project-error');
-
     try {
-        const response = await fetch(`/api/projects/${id}`);
+        const response = await fetch(`/api/projects/${encodeURIComponent(id)}`);
         if (!response.ok) {
             showErrorState();
             return;
         }
 
-        const project = await response.json();
-        renderProjectDetails(project);
-
+        renderProjectDetails(await response.json());
+        const loader = document.getElementById('project-loader');
+        const content = document.getElementById('project-content');
         if (loader) loader.style.display = 'none';
         if (content) content.style.display = 'block';
     } catch (error) {
@@ -45,98 +29,84 @@ async function loadProjectDetails(id) {
     }
 }
 
-function renderProjectDetails(p) {
-    document.title = `${p.title} | Detalhes do Projeto`;
+function renderProjectDetails(project) {
+    const { escapeHTML, iconNameFromClass, refreshIcons, safeExternalUrl } = window.SiteUI;
+    const setText = (id, value) => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = value;
+    };
 
-    const titleEl = document.getElementById('detail-title');
-    const categoryEl = document.getElementById('detail-category');
-    const shortDescEl = document.getElementById('detail-short-desc');
-    const iconEl = document.getElementById('detail-icon');
-    const dateEl = document.getElementById('detail-date');
+    document.title = `${project.title || 'Projeto'} | Arthur Diniz`;
+    setText('detail-title', project.title || 'Projeto sem título');
+    setText('detail-category', getCategoryLabel(project.category));
+    setText('detail-short-desc', project.shortDescription || '');
+    setText('detail-long-desc', project.longDescription || project.shortDescription || 'Sem descrição detalhada cadastrada.');
+    setText('detail-architecture', project.architecture || 'Arquitetura modular em camadas, com responsabilidades bem definidas.');
 
-    if (titleEl) titleEl.textContent = p.title;
-    if (categoryEl) categoryEl.textContent = getCategoryLabel(p.category);
-    if (shortDescEl) shortDescEl.textContent = p.shortDescription || '';
-    if (iconEl) iconEl.className = p.iconClass || 'fa-solid fa-code';
-    if (dateEl && p.createdAt) {
-        const date = new Date(p.createdAt);
-        dateEl.innerHTML = `<i class="fa-regular fa-calendar"></i> Cadastrado em ${date.toLocaleDateString('pt-BR')}`;
-    }
+    const iconElement = document.getElementById('detail-icon');
+    if (iconElement) iconElement.setAttribute('data-lucide', iconNameFromClass(project.iconClass));
 
-    const longDescEl = document.getElementById('detail-long-desc');
-    if (longDescEl) {
-        longDescEl.textContent = p.longDescription || p.shortDescription || 'Sem descrição detalhada cadastrada.';
-    }
-
-    const highlightsEl = document.getElementById('detail-highlights');
-    if (highlightsEl) {
-        highlightsEl.innerHTML = '';
-        if (p.highlights && p.highlights.length > 0) {
-            p.highlights.forEach(h => {
-                highlightsEl.innerHTML += `
-                    <li>
-                        <i class="fa-solid fa-circle-check highlight-icon"></i>
-                        <span>${h}</span>
-                    </li>
-                `;
-            });
-        } else {
-            highlightsEl.innerHTML = '<li><i class="fa-solid fa-circle-check highlight-icon"></i><span>Desenvolvido seguindo as melhores práticas de código limpo.</span></li>';
+    const dateElement = document.getElementById('detail-date');
+    if (dateElement && project.createdAt) {
+        const date = new Date(project.createdAt);
+        if (!Number.isNaN(date.getTime())) {
+            dateElement.innerHTML = `<i data-lucide="calendar-days"></i> Cadastrado em ${escapeHTML(date.toLocaleDateString('pt-BR'))}`;
         }
     }
 
-    const archEl = document.getElementById('detail-architecture');
-    if (archEl) {
-        archEl.textContent = p.architecture || 'Arquitetura modular em camadas (Layered Architecture) com separação de Controller, Service, DTOs e Repositories.';
+    const highlightsElement = document.getElementById('detail-highlights');
+    if (highlightsElement) {
+        const highlights = Array.isArray(project.highlights) && project.highlights.length
+            ? project.highlights
+            : ['Desenvolvido seguindo boas práticas de organização e legibilidade de código.'];
+
+        highlightsElement.innerHTML = '';
+        highlights.forEach((highlight) => {
+            const item = document.createElement('li');
+            const icon = document.createElement('i');
+            const text = document.createElement('span');
+            icon.setAttribute('data-lucide', 'circle-check');
+            text.textContent = highlight;
+            item.append(icon, text);
+            highlightsElement.appendChild(item);
+        });
     }
 
-    const tagsEl = document.getElementById('detail-tags');
-    if (tagsEl) {
-        tagsEl.innerHTML = '';
-        if (p.tags && p.tags.length > 0) {
-            p.tags.forEach(t => {
-                tagsEl.innerHTML += `<span class="detail-tag-item"><i class="fa-solid fa-tag"></i> ${t}</span>`;
-            });
-        }
+    const tagsElement = document.getElementById('detail-tags');
+    if (tagsElement) {
+        tagsElement.innerHTML = '';
+        (Array.isArray(project.tags) ? project.tags : []).forEach((tag) => {
+            const item = document.createElement('span');
+            item.className = 'detail-tag-item';
+            item.textContent = tag;
+            tagsElement.appendChild(item);
+        });
     }
 
-    const linksEl = document.getElementById('detail-links');
-    const headerActionsEl = document.getElementById('header-action-buttons');
-    let linksHtml = '';
-    let headerButtonsHtml = '';
+    const sourceUrl = safeExternalUrl(project.sourceUrl);
+    const demoUrl = safeExternalUrl(project.demoUrl);
+    const linksElement = document.getElementById('detail-links');
+    const headerActionsElement = document.getElementById('header-action-buttons');
 
-    if (p.sourceUrl) {
-        linksHtml += `
-            <a href="${p.sourceUrl}" target="_blank" class="btn btn-primary w-100 mb-2">
-                <i class="fa-brands fa-github"></i> Repositório no GitHub
-            </a>
-        `;
-        headerButtonsHtml += `
-            <a href="${p.sourceUrl}" target="_blank" class="btn btn-outline btn-sm">
-                <i class="fa-brands fa-github"></i> GitHub
-            </a>
-        `;
+    const sidebarLinks = [];
+    const headerLinks = [];
+    if (sourceUrl) {
+        sidebarLinks.push(`<a href="${escapeHTML(sourceUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary w-100"><i data-lucide="github"></i> Repositório no GitHub</a>`);
+        headerLinks.push(`<a href="${escapeHTML(sourceUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm"><i data-lucide="github"></i> GitHub</a>`);
+    }
+    if (demoUrl) {
+        sidebarLinks.push(`<a href="${escapeHTML(demoUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary w-100"><i data-lucide="play"></i> Abrir demonstração</a>`);
+        headerLinks.push(`<a href="${escapeHTML(demoUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm"><i data-lucide="play"></i> Demo</a>`);
     }
 
-    if (p.demoUrl) {
-        linksHtml += `
-            <a href="${p.demoUrl}" target="_blank" class="btn btn-secondary w-100 mb-2">
-                <i class="fa-solid fa-play"></i> Acessar Demonstração Ao Vivo
-            </a>
-        `;
-        headerButtonsHtml += `
-            <a href="${p.demoUrl}" target="_blank" class="btn btn-primary btn-sm">
-                <i class="fa-solid fa-play"></i> Live Demo
-            </a>
-        `;
+    if (linksElement) {
+        linksElement.innerHTML = sidebarLinks.length
+            ? sidebarLinks.join('')
+            : '<p class="text-muted">Nenhum link público disponível no momento.</p>';
     }
+    if (headerActionsElement) headerActionsElement.innerHTML = headerLinks.join('');
 
-    if (!p.sourceUrl && !p.demoUrl) {
-        linksHtml = `<p class="text-muted">Nenhum link público disponível no momento.</p>`;
-    }
-
-    if (linksEl) linksEl.innerHTML = linksHtml;
-    if (headerActionsEl) headerActionsEl.innerHTML = headerButtonsHtml;
+    refreshIcons(document);
 }
 
 function getCategoryLabel(category) {
@@ -152,9 +122,10 @@ function getCategoryLabel(category) {
 function showErrorState() {
     const loader = document.getElementById('project-loader');
     const content = document.getElementById('project-content');
-    const errorEl = document.getElementById('project-error');
+    const error = document.getElementById('project-error');
 
     if (loader) loader.style.display = 'none';
     if (content) content.style.display = 'none';
-    if (errorEl) errorEl.style.display = 'block';
+    if (error) error.style.display = 'block';
+    if (window.SiteUI) window.SiteUI.refreshIcons(error || document);
 }

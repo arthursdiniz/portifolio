@@ -1,183 +1,32 @@
 document.addEventListener('DOMContentLoaded', () => {
+    'use strict';
 
-    const yearEl = document.getElementById('current-year');
-    if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-    const navbar = document.querySelector('.navbar');
-    window.addEventListener('scroll', () => {
-        if (navbar) {
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        }
-    });
-
-    const hamburger = document.querySelector('.hamburger');
-    const navLinks = document.querySelector('.nav-links');
-    const navLinksItems = document.querySelectorAll('.nav-links li a');
-
-    if (hamburger && navLinks) {
-        hamburger.addEventListener('click', () => {
-            navLinks.classList.toggle('nav-active');
-            const icon = hamburger.querySelector('i');
-            if (icon) {
-                icon.classList.toggle('fa-times');
-                icon.classList.toggle('fa-bars');
-            }
-        });
-
-        navLinksItems.forEach(item => {
-            item.addEventListener('click', () => {
-                if (navLinks.classList.contains('nav-active')) {
-                    navLinks.classList.remove('nav-active');
-                    const icon = hamburger.querySelector('i');
-                    if (icon) {
-                        icon.classList.add('fa-bars');
-                        icon.classList.remove('fa-times');
-                    }
-                }
-            });
-        });
-    }
-
-    const revealOnScroll = () => {
-        const revealElements = document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right');
-        const windowHeight = window.innerHeight;
-        const elementVisible = 80;
-
-        revealElements.forEach(element => {
-            const elementTop = element.getBoundingClientRect().top;
-            if (elementTop < windowHeight - elementVisible) {
-                element.classList.add('active');
-            }
-        });
-    };
-    window.addEventListener('scroll', revealOnScroll);
-
-    const showToast = (message, type = 'success') => {
-        const toast = document.getElementById('toast');
-        if (!toast) return;
-        toast.className = `toast toast-${type} show`;
-        toast.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> ${message}`;
-        setTimeout(() => {
-            toast.className = 'toast';
-        }, 4000);
-    };
-
+    const { escapeHTML, iconNameFromClass, refreshIcons, safeExternalUrl } = window.SiteUI;
     let currentCategory = 'all';
     let currentSearch = '';
 
-    const loadProjects = async () => {
-        const projectsGrid = document.getElementById('projects-grid');
-        if (!projectsGrid) return;
-
-        try {
-            let url = '/api/projects';
-            const params = new URLSearchParams();
-            if (currentCategory && currentCategory !== 'all') {
-                params.append('category', currentCategory);
-            }
-            if (currentSearch && currentSearch.trim() !== '') {
-                params.append('search', currentSearch.trim());
-            }
-
-            const queryString = params.toString();
-            if (queryString) {
-                url += `?${queryString}`;
-            }
-
-            const response = await fetch(url);
-            if (response.ok) {
-                const projects = await response.json();
-                renderProjects(projects);
-            } else {
-                projectsGrid.innerHTML = `
-                    <div class="empty-state glass-box">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <p>Não foi possível carregar os projetos no momento.</p>
-                    </div>
-                `;
-            }
-        } catch (error) {
-            console.error('Erro ao buscar projetos:', error);
-            projectsGrid.innerHTML = `
-                <div class="empty-state glass-box">
-                    <i class="fa-solid fa-server"></i>
-                    <p>Erro de conexão com a API Spring Boot.</p>
-                </div>
-            `;
-        }
+    const revealImmediately = (elements) => {
+        elements.forEach((element) => element.classList.add('active'));
     };
 
-    const renderProjects = (projects) => {
-        const projectsGrid = document.getElementById('projects-grid');
-        if (!projectsGrid) return;
+    const setupReveals = (root = document) => {
+        const elements = [...root.querySelectorAll('.reveal-up:not(.active), .reveal-left:not(.active), .reveal-right:not(.active)')];
+        if (!elements.length) return;
 
-        projectsGrid.innerHTML = '';
-
-        if (!projects || projects.length === 0) {
-            projectsGrid.innerHTML = `
-                <div class="empty-state glass-box" style="grid-column: 1 / -1;">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <h3>Nenhum projeto encontrado</h3>
-                    <p>Tente buscar por outro termo ou selecione outra categoria.</p>
-                </div>
-            `;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+            revealImmediately(elements);
             return;
         }
 
-        projects.forEach((proj, index) => {
-            let delay = (index % 4) * 0.1;
+        const observer = new IntersectionObserver((entries, currentObserver) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add('active');
+                currentObserver.unobserve(entry.target);
+            });
+        }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
 
-            let tagsHtml = '';
-            if (proj.tags && proj.tags.length > 0) {
-                tagsHtml = proj.tags.slice(0, 4).map(t => `<span>${t}</span>`).join('');
-                if (proj.tags.length > 4) {
-                    tagsHtml += `<span>+${proj.tags.length - 4}</span>`;
-                }
-            }
-
-            let linksHtml = '';
-            if (proj.sourceUrl) {
-                linksHtml += `<a href="${proj.sourceUrl}" class="project-link" target="_blank" title="Ver código no GitHub" onclick="event.stopPropagation()"><i class="fa-brands fa-github"></i> Código</a>`;
-            }
-            if (proj.demoUrl) {
-                linksHtml += `<a href="${proj.demoUrl}" class="project-link" target="_blank" title="Ver demonstração" onclick="event.stopPropagation()"><i class="fa-solid fa-play"></i> Demo</a>`;
-            }
-
-            const iconClass = proj.iconClass || 'fa-solid fa-code';
-            const categoryName = getCategoryLabel(proj.category);
-
-            const cardHTML = `
-                <div class="project-card glass-box reveal-up" style="transition-delay: ${delay}s;" data-category="${proj.category}" onclick="window.location.href='project.html?id=${proj.id}'">
-                    <div class="project-img placeholder-img">
-                        <i class="${iconClass}"></i>
-                        <span class="card-category-tag">${categoryName}</span>
-                    </div>
-                    <div class="project-info">
-                        <div class="project-tags">
-                            ${tagsHtml}
-                        </div>
-                        <h3>${proj.title}</h3>
-                        <p>${proj.shortDescription || 'Clique para ver os detalhes completos da arquitetura e implementação.'}</p>
-
-                        <div class="project-card-footer">
-                            <a href="project.html?id=${proj.id}" class="btn-card-details" onclick="event.stopPropagation()">
-                                Ver Detalhes <i class="fa-solid fa-arrow-right"></i>
-                            </a>
-                            <div class="project-links">
-                                ${linksHtml}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            projectsGrid.insertAdjacentHTML('beforeend', cardHTML);
-        });
-
-        setTimeout(revealOnScroll, 100);
+        elements.forEach((element) => observer.observe(element));
     };
 
     const getCategoryLabel = (category) => {
@@ -190,13 +39,104 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const renderEmptyState = (icon, title, message) => {
+        const projectsGrid = document.getElementById('projects-grid');
+        if (!projectsGrid) return;
+
+        projectsGrid.innerHTML = `
+            <div class="empty-state">
+                <i data-lucide="${icon}"></i>
+                <h3>${escapeHTML(title)}</h3>
+                <p>${escapeHTML(message)}</p>
+            </div>
+        `;
+        projectsGrid.setAttribute('aria-busy', 'false');
+        refreshIcons(projectsGrid);
+    };
+
+    const renderProjects = (projects) => {
+        const projectsGrid = document.getElementById('projects-grid');
+        if (!projectsGrid) return;
+
+        projectsGrid.innerHTML = '';
+        projectsGrid.setAttribute('aria-busy', 'false');
+
+        if (!Array.isArray(projects) || projects.length === 0) {
+            renderEmptyState('search-x', 'Nenhum projeto encontrado', 'Tente outro termo ou selecione uma categoria diferente.');
+            return;
+        }
+
+        projects.forEach((project) => {
+            const tags = Array.isArray(project.tags) ? project.tags : [];
+            const tagsHTML = tags.slice(0, 4).map((tag) => `<span>${escapeHTML(tag)}</span>`).join('');
+            const overflowTag = tags.length > 4 ? `<span>+${tags.length - 4}</span>` : '';
+            const sourceUrl = safeExternalUrl(project.sourceUrl);
+            const demoUrl = safeExternalUrl(project.demoUrl);
+            const projectUrl = `project.html?id=${encodeURIComponent(project.id)}`;
+            const icon = iconNameFromClass(project.iconClass);
+
+            const externalLinks = [
+                sourceUrl ? `<a href="${escapeHTML(sourceUrl)}" class="project-link" target="_blank" rel="noopener noreferrer"><i data-lucide="github"></i> Código</a>` : '',
+                demoUrl ? `<a href="${escapeHTML(demoUrl)}" class="project-link" target="_blank" rel="noopener noreferrer"><i data-lucide="play"></i> Demo</a>` : ''
+            ].join('');
+
+            const article = document.createElement('article');
+            article.className = 'project-card reveal-up';
+            article.innerHTML = `
+                <div class="project-card-topline">
+                    <div class="project-icon-box" aria-hidden="true"><i data-lucide="${icon}"></i></div>
+                    <span class="card-category-tag">${escapeHTML(getCategoryLabel(project.category))}</span>
+                </div>
+                <div class="project-info">
+                    <div class="project-tags">${tagsHTML}${overflowTag}</div>
+                    <h3><a href="${projectUrl}">${escapeHTML(project.title || 'Projeto sem título')}</a></h3>
+                    <p>${escapeHTML(project.shortDescription || 'Veja os detalhes da arquitetura e da implementação deste projeto.')}</p>
+                    <div class="project-card-footer">
+                        <a href="${projectUrl}" class="btn-card-details">Ver estudo de caso <i data-lucide="arrow-right"></i></a>
+                        <div class="project-links">${externalLinks}</div>
+                    </div>
+                </div>
+            `;
+            projectsGrid.appendChild(article);
+        });
+
+        refreshIcons(projectsGrid);
+        setupReveals(projectsGrid);
+    };
+
+    const loadProjects = async () => {
+        const projectsGrid = document.getElementById('projects-grid');
+        if (!projectsGrid) return;
+
+        projectsGrid.setAttribute('aria-busy', 'true');
+
+        try {
+            const params = new URLSearchParams();
+            if (currentCategory !== 'all') params.set('category', currentCategory);
+            if (currentSearch.trim()) params.set('search', currentSearch.trim());
+
+            const query = params.toString();
+            const response = await fetch(`/api/projects${query ? `?${query}` : ''}`);
+            if (!response.ok) throw new Error(`Resposta inesperada: ${response.status}`);
+
+            renderProjects(await response.json());
+        } catch (error) {
+            console.error('Erro ao buscar projetos:', error);
+            renderEmptyState('server-off', 'Projetos indisponíveis', 'Não foi possível conectar à API neste momento.');
+        }
+    };
+
     const setupFilters = () => {
-        const filterBtns = document.querySelectorAll('.filter-btn');
-        filterBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                filterBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentCategory = btn.getAttribute('data-filter');
+        document.querySelectorAll('.filter-btn').forEach((button) => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach((item) => {
+                    item.classList.remove('active');
+                    item.setAttribute('aria-pressed', 'false');
+                });
+
+                button.classList.add('active');
+                button.setAttribute('aria-pressed', 'true');
+                currentCategory = button.dataset.filter || 'all';
                 loadProjects();
             });
         });
@@ -204,26 +144,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const setupSearch = () => {
         const searchInput = document.getElementById('project-search');
-        const clearBtn = document.getElementById('clear-search');
+        const clearButton = document.getElementById('clear-search');
         if (!searchInput) return;
 
         let debounceTimer;
-        searchInput.addEventListener('input', (e) => {
-            clearTimeout(debounceTimer);
-            currentSearch = e.target.value;
-            if (clearBtn) {
-                clearBtn.style.display = currentSearch ? 'block' : 'none';
-            }
-            debounceTimer = setTimeout(() => {
-                loadProjects();
-            }, 300);
+        searchInput.addEventListener('input', (event) => {
+            window.clearTimeout(debounceTimer);
+            currentSearch = event.target.value;
+            if (clearButton) clearButton.style.display = currentSearch ? 'grid' : 'none';
+            debounceTimer = window.setTimeout(loadProjects, 300);
         });
 
-        if (clearBtn) {
-            clearBtn.addEventListener('click', () => {
+        if (clearButton) {
+            clearButton.addEventListener('click', () => {
                 searchInput.value = '';
                 currentSearch = '';
-                clearBtn.style.display = 'none';
+                clearButton.style.display = 'none';
+                searchInput.focus();
                 loadProjects();
             });
         }
@@ -231,6 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     setupFilters();
     setupSearch();
-    revealOnScroll();
+    setupReveals();
     loadProjects();
 });

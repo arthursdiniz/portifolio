@@ -30,6 +30,13 @@ target/
 /.nb-gradle/
 build/
 
+### Frontend tooling & visual tests ###
+node_modules/
+playwright-report/
+test-results/
+blob-report/
+baseline-*.png
+
 ### Logs & OS ###
 *.log
 .DS_Store

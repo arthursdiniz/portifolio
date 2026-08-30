@@ -11,9 +11,10 @@ Portfólio profissional e sistema web desenvolvido com **Java 25**, **Spring Boo
 - **Banco de Dados**: PostgreSQL (Produção/Desenvolvimento) & H2 (Testes automatizados)
 - **Documentação de API**: OpenAPI 3 / Swagger UI (`springdoc-openapi`)
 - **Segurança**: Interceptor de autenticação administrativa (`X-Admin-Key`)
-- **Testes**: JUnit 5, Mockito, MockMvc
+- **Testes**: JUnit 5, Mockito, MockMvc e Playwright
 - **Containerização**: Docker, Docker Compose
-- **Front-end**: Vanilla JavaScript, HTML5, CSS3 moderno (Dark Minimalist & Glassmorphism)
+- **Front-end**: HTML5 semântico, CSS3 responsivo e Vanilla JavaScript
+- **Interface**: Lucide Icons e IBM Plex Sans/Mono, servidos localmente
 
 ---
 
@@ -23,7 +24,7 @@ Portfólio profissional e sistema web desenvolvido com **Java 25**, **Spring Boo
 - **Data Transfer Objects (DTOs)**: Isolamento do modelo de domínio com validações estritas (`@Valid`, `@NotBlank`, `@Size`, `@Email`).
 - **Tratamento Global de Exceções**: `@RestControllerAdvice` padronizando retornos de erro em JSON com status HTTP adequados.
 - **Segurança Granular**:
-  - Visitantes e recrutadores navegam livremente e enviam mensagens sem barreiras.
+  - Visitantes e recrutadores navegam livremente; a área pública exibe apenas os dados profissionais de contato, sem formulário de envio.
   - Endpoints de modificação (`POST`, `PUT`, `DELETE`) e leitura de mensagens privadas exigem chave administrativa secreta.
 
 ---
@@ -80,10 +81,22 @@ Após iniciar a aplicação:
 
 ## 🧪 Executando os Testes Automatizados
 
+### Back-end
+
 ```bash
 ./mvnw test
 ```
 *Os testes são executados automaticamente em um banco H2 isolado em memória, permitindo execução contínua em qualquer ambiente de CI/CD (ex: GitHub Actions).*
+
+### Interface responsiva
+
+```bash
+npm install
+npx playwright install chromium
+npm run test:visual
+```
+
+Os testes de interface cobrem a página pública, os detalhes de projeto e o painel administrativo em larguras de 320, 375, 430, 768, 1024, 1280, 1440 e 1920 pixels.
 
 ---
 
